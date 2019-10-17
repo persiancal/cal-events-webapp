@@ -1,24 +1,32 @@
-# app
+<div dir="rtl">
 
-## Project setup
+# رویدادهای تقویم ایران
+
+در این مخزن نسخه وب‌اپ [رویدادهای تقویم ایران](https://github.com/persiancal/cal-events) قرار می‌گیرد.
+
+## چگونه شروع کنیم؟
+بعد از کلون گرفتن این مخزن کافیست وارد آن شده و با کامند زیر اقدام به نصب وابستگی‌های پروژه کنید:
+
+</div>
+
+<div dir="ltr">
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+</div>
+
+<div dir="rtl">
+
+سپس با استفاده از کامند زیر می‌توانید پروژه رو بر روی سیستم خود اجرا کنید:
+
+</div>
+
+<div dir="ltr">
+
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+</div>
