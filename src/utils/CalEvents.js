@@ -12,14 +12,15 @@ class DateEvents {
 
   isReady = false;
 
+  calendarsKey = ['jalali', 'gregorian', 'hijri'];
+
   constructor() {
-    const calendars = ['jalali', 'gregorian', 'hijri'];
     const getAndSave = (calendar) => {
       const url = `https://raw.githubusercontent.com/persiancal/cal-events/gh-pages/${calendar}.json`;
       HttpClient('GET', url).then((resp) => {
         if (resp.ok) {
           this.savedData[calendar] = resp.data;
-          if (Object.keys(this.savedData).length === calendars.length) {
+          if (Object.keys(this.savedData).length === this.calendarsKey.length) {
             this.isReady = true;
           }
         } else {
@@ -29,7 +30,7 @@ class DateEvents {
         }
       });
     };
-    calendars.forEach(getAndSave);
+    this.calendarsKey.forEach(getAndSave);
   }
 
   async ifReady() {
