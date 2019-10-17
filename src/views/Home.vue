@@ -8,11 +8,15 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
+import CalEvents from '@/utils/CalEvents';
 
 export default {
   name: 'home',
   components: {
     HelloWorld,
+  },
+  async mounted() {
+    CalEvents.dateEvents(new Date(), 'jalali');
   },
 };
 </script>
