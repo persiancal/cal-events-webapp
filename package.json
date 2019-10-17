@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build:framevuerk": "framevuerk-builder -c ./framevuerk.config.js"
+    "build:framevuerk": "framevuerk-builder -c ./framevuerk.config.js",
+    "postinstall": "npm run build:framevuerk"
   },
   "dependencies": {
     "core-js": "^3.1.2",
