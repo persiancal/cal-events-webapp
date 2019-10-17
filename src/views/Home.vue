@@ -9,22 +9,22 @@
       <div class="fv-row">
         <div class="fv-col">
           <router-link to="/jalali/months">
-            <div class="cal-card fv-border fv-radius fv-shadow">
+            <SelectableCard>
               <h3>جلالی | Jalali</h3>
-            </div>
+            </SelectableCard>
           </router-link>
         </div>
         <div class="fv-col">
           <router-link to="/gregorian/months">
-            <div class="cal-card fv-border fv-radius fv-shadow">
+            <SelectableCard>
               <h3>میلادی | Gregorian</h3>
-            </div>
+            </SelectableCard>
           </router-link>
         </div>
         <div class="fv-col">
-          <div class="cal-card fv-border fv-shadow fv-radius fv-disabled">
+          <SelectableCard class="fv-disabled">
             <h3>قمری | Hijri</h3>
-          </div>
+          </SelectableCard>
         </div>
       </div>
     </template>
@@ -35,22 +35,16 @@
 // @ is an alias to /src
 import CalEvents from '@/utils/CalEvents';
 import MainLayout from '@/components/MainLayout.vue';
+import SelectableCard from '@/components/SelectableCard.vue';
 
 export default {
   name: 'home',
   components: {
     MainLayout,
+    SelectableCard,
   },
   async mounted() {
     CalEvents.dateEvents(new Date(), 'jalali');
   },
 };
 </script>
-
-
-<style lang="scss" scoped>
-.cal-card {
-  text-align: center;
-  padding: 3em 1em;
-}
-</style>
