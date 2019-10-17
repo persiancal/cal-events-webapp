@@ -1,0 +1,17 @@
+module.exports = {
+  'config-name': 'custom',
+  direction: 'rtl',
+  'primary-color': '#41b883',
+  'secondary-color': '#35485d',
+  'danger-color': '#dd4b39',
+  'warning-color': '#ef8f00',
+  'info-color': '#14b0cf',
+  'bg-color': '#fff',
+  'header-bg-color': '#35485d',
+  'sidebar-bg-color': '#3a3a3a',
+  'footer-bg-color': '#3a3a3a',
+  padding: '1em',
+  'transition-speed': '0.35s',
+  'border-radius': '2px',
+  'shadow-size': '1px',
+};
