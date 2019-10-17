@@ -9,7 +9,13 @@
       <DatePicker :value="value" @input="updateValue($event)" />
       <hr />
       <div>
-        {{dateEvents}}
+        <fvList>
+          <fvListItem v-for="(event, index) in monthEvents" :key="'evt' + index">
+            <span class="fv-text-danger">{{ event.day }}</span>
+            <b v-if="event.day === value.getDate()">{{ event.title.fa_IR }}</b>
+            <i v-else>{{ event.title.fa_IR }}</i>
+          </fvListItem>
+        </fvList>
       </div>
     </template>
   </MainLayout>
@@ -30,7 +36,8 @@ export default {
   data() {
     return {
       value: undefined,
-      dateEvents: ['آزاد سازی خرمشهر'],
+      dateEvents: [],
+      monthEvents: [],
     };
   },
   methods: {
@@ -41,7 +48,20 @@ export default {
       month = month ? Number(month) - 1 : today.getMonth();
       date = date ? Number(date) : today.getDate();
       this.value = new IDate(year, month, date);
-      this.dateEvents = await CalEvents.dateEvents(this.value);
+    },
+    async calcMonthEvents() {
+      const dt = new IDate(this.value);
+      dt.setMonth(dt.getMonth() + 1);
+      dt.setDate(0);
+      const thisMonthDays = dt.getDate();
+      const promises = [];
+      for (let i = 1; i <= thisMonthDays; i += 1) {
+        const date = new IDate(this.value.getFullYear(), this.value.getMonth(), i);
+        promises.push(CalEvents.dateEvents(date));
+      }
+      Promise.all(promises).then((data) => {
+        this.monthEvents = data.flat();
+      });
     },
     updateValue(value) {
       this.$router.push({
@@ -51,6 +71,13 @@ export default {
   },
   async created() {
     await this.calcValue();
+    this.calcMonthEvents();
+  },
+  watch: {
+    $route() {
+      this.calcValue();
+      this.calcMonthEvents();
+    },
   },
 };
 </script>

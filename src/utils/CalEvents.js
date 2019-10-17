@@ -12,7 +12,7 @@ class DateEvents {
 
   isReady = false;
 
-  calendarsKey = ['jalali', 'gregorian', 'hijri'];
+  calendarsKey = ['jalali', 'gregorian'];
 
   constructor() {
     const getAndSave = (calendar) => {
@@ -65,12 +65,48 @@ class DateEvents {
     return ret || this.calendarsKey || calendar;
   }
 
-  async dateEvents(dateObj = new IDate()) {
+  async dateEvents(inputDate) {
     await this.ifReady();
-    if (dateObj) {
-      return [];
-    }
-    return false;
+    const ret = [];
+    const DateLibs = {
+      jalali: IDate,
+      gregorian: Date,
+    };
+    const today = {
+      jalali: new IDate(),
+      gregorian: new Date(),
+    };
+    const oneOf = (...args) => {
+      for (let i = 0; i < args.length; i += 1) {
+        if (typeof args[i] !== 'undefined') {
+          return args[i];
+        }
+      }
+      return false;
+    };
+    this.calendarsKey.forEach((calendar) => {
+      this.savedData[calendar].events.forEach((event) => {
+        const eventDate = new DateLibs[calendar](
+          oneOf(event.year, today[calendar].getFullYear()),
+          oneOf(event.month, -1) + 1,
+          oneOf(event.day, 1),
+        );
+        const checks = [];
+        if (event.year && event.discuntinued) {
+          checks.push(eventDate.getFullYear() <= inputDate.getFullYear());
+        }
+        if (event.month) {
+          checks.push(eventDate.getMonth() === inputDate.getMonth());
+        }
+        if (event.day) {
+          checks.push(eventDate.getDate() === inputDate.getDate());
+        }
+        if (checks.filter(c => c === false).length === 0) {
+          ret.push(event);
+        }
+      });
+    });
+    return ret;
   }
 }
 
