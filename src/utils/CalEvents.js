@@ -42,6 +42,29 @@ class DateEvents {
     return true;
   }
 
+  async getCalendars() {
+    await this.ifReady();
+    const ret = [];
+    const titles = {
+      jalali: 'جلالی | Jalali',
+      gregorian: 'میلادی | Gregorian',
+      hijri: 'قمری | Hijri',
+    };
+    this.calendarsKey.forEach((calendar) => {
+      ret.push({
+        key: calendar,
+        title: titles[calendar],
+      });
+    });
+    return ret;
+  }
+
+  async getMonths(calendar) {
+    await this.ifReady();
+    const ret = [];
+    return ret || this.calendarsKey || calendar;
+  }
+
   async dateEvents(date = new Date(), calendar = 'jalali') {
     await this.ifReady();
     console.log(this.savedData);
