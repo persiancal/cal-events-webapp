@@ -1,3 +1,6 @@
+<template>
+  <div />
+</template>
 <script>
 import IDate from 'idate';
 

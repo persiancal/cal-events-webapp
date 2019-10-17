@@ -65,13 +65,12 @@ class DateEvents {
     return ret || this.calendarsKey || calendar;
   }
 
-  async dateEvents(date = new Date(), calendar = 'jalali') {
+  async dateEvents(dateObj = new IDate()) {
     await this.ifReady();
-    console.log(this.savedData);
-    const DateLib = calendar === 'jalali' ? IDate : Date;
-    // we have to api call here. but for now i just parse static date
-    const convertedDate = new DateLib(date);
-    return convertedDate;
+    if (dateObj) {
+      return [];
+    }
+    return false;
   }
 }
 
