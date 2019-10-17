@@ -7,12 +7,6 @@
     </template>
     <template slot="content">
       <div v-if="currentView === 'none'">
-        انتخاب سال
-      </div>
-      <div v-else-if="currentView === 'year'">
-        انتخاب ماه
-      </div>
-      <div v-else-if="currentView === 'month'">
         <div class="fv-row">
           <div class="fv-col" v-for="calendar in calendars" :key="calendar.key">
             <router-link :to="'/' + calendar.key + '/months'">
@@ -22,6 +16,12 @@
             </router-link>
           </div>
         </div>
+      </div>
+      <div v-else-if="currentView === 'year'">
+        انتخاب ماه
+      </div>
+      <div v-else-if="currentView === 'month'">
+        <DatePicker />
         Day list goes here
         انتخاب روز
       </div>
@@ -30,12 +30,19 @@
 </template>
 
 <script>
+import IDate from 'idate';
 import CalEvents from '@/utils/CalEvents';
 import MainLayout from '@/components/MainLayout.vue';
 import SelectableCard from '@/components/SelectableCard.vue';
+import DatePicker from '@/components/DatePicker.vue';
 
 export default {
   name: 'home',
+  components: {
+    MainLayout,
+    SelectableCard,
+    DatePicker,
+  },
   data() {
     return {
       calendars: [],
@@ -43,11 +50,15 @@ export default {
   },
   computed: {
     selectedDate() {
-      const [year, month, day] = this.$route.params.date.split('-');
+      let [year, month, day] = this.$route.params.date.split('-');
+      year = year ? Number(year) : undefined;
+      month = month ? Number(month) - 1 : undefined;
+      day = day ? Number(day) : undefined;
       return {
         year,
         month,
         day,
+        dateObj: new IDate(year, month, day),
       };
     },
     currentView() {
@@ -60,10 +71,6 @@ export default {
       }
       return 'none';
     },
-  },
-  components: {
-    MainLayout,
-    SelectableCard,
   },
   async mounted() {
     this.calendars = await CalEvents.getCalendars();
