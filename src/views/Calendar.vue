@@ -10,9 +10,12 @@
       <hr />
       <div>
         <fvList>
-          <fvListItem v-for="(event, index) in monthEvents" :key="'evt' + index">
-            <span class="fv-text-danger">{{ event.day }}</span>
-            <b v-if="event.day === value.getDate()">{{ event.title.fa_IR }}</b>
+          <fvListItem
+            v-for="(event, index) in monthEvents"
+            :key="'evt' + index"
+            @click="log(event)">
+            <span class="fv-text-danger">{{ event.eventDate }}</span>
+            <b v-if="event.eventDate === value.getDate()">{{ event.title.fa_IR }}</b>
             <i v-else>{{ event.title.fa_IR }}</i>
           </fvListItem>
         </fvList>
@@ -46,6 +49,9 @@ export default {
     },
   },
   methods: {
+    log(x) {
+      console.log(x);
+    },
     async calcValue() {
       let [year, month, date] = this.$route.params.date.split('-');
       const today = new DateLib[this.calendar]();
@@ -61,8 +67,14 @@ export default {
       const thisMonthDays = dt.getDate();
       const promises = [];
       for (let i = 1; i <= thisMonthDays; i += 1) {
-        const date = new DateLib[this.calendar](this.value.getFullYear(), this.value.getMonth(), i);
-        promises.push(CalEvents.dateEvents(date));
+        promises.push(
+          CalEvents.dateEvents(
+            this.value.getFullYear(),
+            this.value.getMonth(),
+            i,
+            this.calendar,
+          ),
+        );
       }
       Promise.all(promises).then((data) => {
         this.monthEvents = data.flat();

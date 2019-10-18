@@ -65,7 +65,7 @@ class DateEvents {
     return ret || this.calendarsKey || calendar;
   }
 
-  async dateEvents(inputDate) {
+  async dateEvents(year, month, date, calendar) {
     await this.ifReady();
     const ret = [];
     const oneOf = (...args) => {
@@ -76,28 +76,43 @@ class DateEvents {
       }
       return false;
     };
-    this.calendarsKey.forEach((calendar) => {
-      this.savedData[calendar].events.forEach((event) => {
-        const eventDate = new DateLib[calendar](
+    this.calendarsKey.forEach((cCalendar) => {
+      this.savedData[cCalendar].events.forEach((event) => {
+        const eventDateObj = new DateLib[cCalendar](
           oneOf(event.year),
-          oneOf(event.month, -1) + 1,
+          oneOf(event.month, 1) - 1,
           oneOf(event.day, 1),
         );
-        const checkDate = new DateLib[calendar](inputDate.toISOString());
+        const eventDateObjInInputCalendar = new DateLib[calendar](eventDateObj.toISOString());
+        const eventYear = eventDateObjInInputCalendar.getFullYear();
+        const eventMonth = eventDateObjInInputCalendar.getMonth();
+        const eventDate = eventDateObjInInputCalendar.getDate();
         const checks = [];
         if (event.year && event.discuntinued) {
-          checks.push(eventDate.getFullYear() <= checkDate.getFullYear());
+          checks.push(eventYear <= year);
         }
         if (event.month) {
-          checks.push(eventDate.getMonth() === checkDate.getMonth());
+          checks.push(eventMonth === month);
         }
         if (event.day) {
-          checks.push(eventDate.getDate() === checkDate.getDate());
+          checks.push(eventDate === date);
         }
         if (checks.filter(c => c === false).length === 0) {
-          ret.push(event);
+          ret.push(Object.assign(event, {
+            eventYear,
+            eventMonth,
+            eventDate,
+          }));
         }
       });
+    });
+    ret.sort((a, b) => {
+      if (a.eventDate > b.eventDate) {
+        return -1;
+      } if (a.eventDate < b.eventDate) {
+        return 1;
+      }
+      return 0;
     });
     return ret;
   }
