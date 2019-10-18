@@ -16,15 +16,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- <tr v-for="dp in 6" :key="dp + 'dp'">
-            <td
-              v-for="d in dpRow(dp, currentValue.getMonth(), currentValue.getFullYear())"
-              :key="d.date + 'd'"
-              :disabled="d.disabled"
-              @click="selectDate(d.date, $event)"
-              :class="{'highlighted': d.highlighted, selected: d.selected, hidden: d.hidden}"
-              v-text="d.realDate" />
-          </tr> -->
           <tr v-for="(row, rIndex) in daysMatrix" :key="rIndex + 'row'">
             <td
               v-for="(col, cIndex) in row"
@@ -71,9 +62,7 @@
 </template>
 
 <script>
-import IDate from 'idate';
-
-global.IDate = IDate;
+import DateLib, { weekDayNames, monthNames } from '@/utils/DateLib';
 
 export default {
   name: 'DatePicker',
@@ -81,36 +70,20 @@ export default {
     value: {
       default: undefined,
     },
-    required: {
-      type: [Boolean, Function],
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    deleteButton: {
-      type: Boolean,
-      default: true,
+    calendar: {
+      default: 'gregorian',
     },
   },
   data() {
     return {
-      Date: IDate,
       currentValue: undefined,
-      visualProps: {},
-      weekDayNames: ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'],
-      monthNames: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
-      searchQuery: undefined,
+      weekDayNames: weekDayNames[this.calendar],
+      monthNames: monthNames[this.calendar],
       view: 'days',
     };
   },
   created() {
-    this.currentValue = new this.Date(this.value.toISOString());
+    this.currentValue = new DateLib[this.calendar](this.value.toISOString());
   },
   computed: {
     daysMatrix() {
@@ -168,10 +141,10 @@ export default {
       };
     },
     monthFirstDay(year, month) {
-      return new this.Date(year, month, 1).getDay();
+      return new DateLib[this.calendar](year, month, 1).getDay();
     },
     daysInMonth(year, month) {
-      return new this.Date(year, month + 1, 0).getDate();
+      return new DateLib[this.calendar](year, month + 1, 0).getDate();
     },
     isSelected(aYear = undefined, aMonth = undefined, aDate = undefined) {
       const { year, month, date } = this.getValue();
