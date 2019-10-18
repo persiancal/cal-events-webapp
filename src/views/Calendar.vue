@@ -59,7 +59,9 @@ export default {
   },
   methods: {
     log(x) {
+      /* eslint-disable */
       console.log(x);
+      /* eslint-enable */
     },
     async calcValue() {
       let [year, month, date] = this.$route.params.date.split('-');
