@@ -1,17 +1,25 @@
 <template>
   <div class="date-picker">
     <div class="header">
-      <div class="fv-grow fv-text-center">
-        <span v-text="getValue().year" @click="setView('years')"/>
-        <b v-text="monthNames[getValue().month]" @click="setView('months')"/>
-      </div>
+      <h2
+        class="fv-inline"
+        v-text="monthNames[getValue().month]"
+        @click="setView('months')"/>
+      <h5
+        class="fv-line fv-text-light"
+        v-text="getValue().year"
+        @click="setView('years')"/>
     </div>
     <div class="content" tabindex="-1" v-if="view === 'days'">
       <table>
         <thead>
           <tr>
-            <td v-for="weekDay in weekDayNames" :key="weekDay + 'wd'">
-              <div class="item" v-text="weekDay"/>
+            <td
+              v-for="weekDay in weekDayNames"
+              :key="weekDay + 'wd'">
+              <div
+                class="item fv-text-light"
+                v-text="weekDay"/>
             </td>
           </tr>
         </thead>
@@ -19,10 +27,13 @@
           <tr v-for="(row, rIndex) in daysMatrix" :key="rIndex + 'row'">
             <td
               v-for="(col, cIndex) in row"
-              :key="cIndex + 'col'"
-              :selected="isSelected(undefined, undefined, col)"
-              @click="setValue(undefined, undefined, col)">
-              {{ col }}
+              :key="cIndex + 'col'">
+              <div
+                v-if="!!col"
+                class="item clickable"
+                v-text="col"
+                :selected="!!col && isSelected(undefined, undefined, col)"
+                @click="setValue(undefined, undefined, col)"/>
             </td>
           </tr>
         </tbody>
@@ -34,10 +45,12 @@
           <tr v-for="(row, rIndex) in monthsMatrix" :key="rIndex + 'row'">
             <td
               v-for="(col, cIndex) in row"
-              :key="cIndex + 'col'"
-              :selected="isSelected(undefined, col, undefined)"
-              @click="setValue(undefined, col, undefined) && setView('days')">
-              {{ monthNames[col] }}
+              :key="cIndex + 'col'">
+              <div
+                class="item clickable"
+                v-text="monthNames[col]"
+                :selected="isSelected(undefined, col, undefined)"
+                @click="setValue(undefined, col, undefined) && setView('days')"/>
             </td>
           </tr>
         </tbody>
@@ -49,10 +62,12 @@
           <tr v-for="(row, rIndex) in yearsMatrix" :key="rIndex + 'row'">
             <td
               v-for="(col, cIndex) in row"
-              :key="cIndex + 'col'"
-              :selected="isSelected(col, undefined, undefined)"
-              @click="setValue(col, undefined, undefined) && setView('months')">
-              {{ col }}
+              :key="cIndex + 'col'">
+              <div
+                class="item clickable"
+                v-text="col"
+                :selected="isSelected(col, undefined, undefined)"
+                @click="setValue(col, undefined, undefined) && setView('months')" />
             </td>
           </tr>
         </tbody>
@@ -187,19 +202,41 @@ export default {
 
 
 <style lang="scss" scoped>
+  .date-picker {
+    max-width: 530px;
+    margin: auto;
+  }
   table {
     width: 100%;
     table-layout: fixed;
 
     td {
       text-align: center;
-
-      &[selected] {
-        color: red;
-      }
     }
   }
   .item {
     text-align: center;
+    padding: 0.7em 0.1em;
+    margin: auto;
+
+    &[selected] {
+      color: #bf2b2b;
+      font-weight: bold;
+    }
+
+    &.clickable{
+      cursor: pointer;
+      border-radius: 8px;
+
+      &:hover {
+        background: rgb(245, 245, 245);
+      }
+    }
+  }
+  .header {
+    text-align: center;
+    & > * {
+      cursor: pointer;
+    }
   }
 </style>
