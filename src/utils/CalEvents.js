@@ -1,4 +1,4 @@
-import IDate from 'idate';
+import DateLib from './DateLib';
 import HttpClient from './HttpClient';
 
 function sleep(time = 200) {
@@ -68,14 +68,6 @@ class DateEvents {
   async dateEvents(inputDate) {
     await this.ifReady();
     const ret = [];
-    const DateLibs = {
-      jalali: IDate,
-      gregorian: Date,
-    };
-    const today = {
-      jalali: new IDate(),
-      gregorian: new Date(),
-    };
     const oneOf = (...args) => {
       for (let i = 0; i < args.length; i += 1) {
         if (typeof args[i] !== 'undefined') {
@@ -86,20 +78,21 @@ class DateEvents {
     };
     this.calendarsKey.forEach((calendar) => {
       this.savedData[calendar].events.forEach((event) => {
-        const eventDate = new DateLibs[calendar](
-          oneOf(event.year, today[calendar].getFullYear()),
+        const eventDate = new DateLib[calendar](
+          oneOf(event.year),
           oneOf(event.month, -1) + 1,
           oneOf(event.day, 1),
         );
+        const checkDate = new DateLib[calendar](inputDate.toISOString());
         const checks = [];
         if (event.year && event.discuntinued) {
-          checks.push(eventDate.getFullYear() <= inputDate.getFullYear());
+          checks.push(eventDate.getFullYear() <= checkDate.getFullYear());
         }
         if (event.month) {
-          checks.push(eventDate.getMonth() === inputDate.getMonth());
+          checks.push(eventDate.getMonth() === checkDate.getMonth());
         }
         if (event.day) {
-          checks.push(eventDate.getDate() === inputDate.getDate());
+          checks.push(eventDate.getDate() === checkDate.getDate());
         }
         if (checks.filter(c => c === false).length === 0) {
           ret.push(event);

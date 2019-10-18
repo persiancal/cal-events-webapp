@@ -12,7 +12,7 @@ const routes = [
     component: Home,
   },
   {
-    path: '/calendar/:date',
+    path: '/calendars/:calendar/:date',
     name: 'calendar',
     component: Calendar,
   },
