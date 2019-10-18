@@ -169,8 +169,12 @@ export default {
       }
       if (typeof aDate !== 'undefined') {
         this.currentValue.setDate(aDate);
-        this.$emit('input', this.currentValue);
       }
+      this.$nextTick(() => {
+        if (this.view === 'days') {
+          this.$emit('input', this.currentValue);
+        }
+      });
       return true;
     },
     setView(view) {
