@@ -2,20 +2,31 @@
   <MainLayout>
     <template slot="header">
       <h2>
-        سلام
+        تقویم {{calendar}}
       </h2>
+      <fvButton @click="$router.push('/')"> بازگشت </fvButton>
     </template>
     <template slot="content">
-      <DatePicker :calendar="calendar" :value="value" @input="updateValue($event)" />
-      <hr />
+      <div class="fv-padding-sm" />
+      <DatePicker
+        :calendar="calendar"
+        :value="value"
+        @input="updateValue($event)" />
+      <hr class="fv-hr fv-shadow" />
       <div>
-        <fvList>
-          <fvListItem v-for="(event, index) in monthEvents" :key="'evt' + index">
-            <span class="fv-text-danger">{{ event.day }}</span>
-            <b v-if="event.day === value.getDate()">{{ event.title.fa_IR }}</b>
+        <fvList v-if="!loading">
+          <fvListItem
+            v-for="(event, index) in monthEvents"
+            :key="'evt' + index"
+            @click="log(event)">
+            <span class="fv-text-danger fv-margin-end">{{ event.eventDate }}</span>
+            <b v-if="event.eventDate === value.getDate()">{{ event.title.fa_IR }}</b>
             <i v-else>{{ event.title.fa_IR }}</i>
           </fvListItem>
         </fvList>
+        <div class="fv-padding fv-text-center" v-else>
+          <fvLoading />
+        </div>
       </div>
     </template>
   </MainLayout>
@@ -38,6 +49,7 @@ export default {
       value: undefined,
       dateEvents: [],
       monthEvents: [],
+      loading: true,
     };
   },
   computed: {
@@ -46,6 +58,11 @@ export default {
     },
   },
   methods: {
+    log(x) {
+      /* eslint-disable */
+      console.log(x);
+      /* eslint-enable */
+    },
     async calcValue() {
       let [year, month, date] = this.$route.params.date.split('-');
       const today = new DateLib[this.calendar]();
@@ -55,17 +72,25 @@ export default {
       this.value = new DateLib[this.calendar](year, month, date);
     },
     async calcMonthEvents() {
+      this.loading = true;
       const dt = new DateLib[this.calendar](this.value);
       dt.setMonth(dt.getMonth() + 1);
       dt.setDate(0);
       const thisMonthDays = dt.getDate();
       const promises = [];
       for (let i = 1; i <= thisMonthDays; i += 1) {
-        const date = new DateLib[this.calendar](this.value.getFullYear(), this.value.getMonth(), i);
-        promises.push(CalEvents.dateEvents(date));
+        promises.push(
+          CalEvents.dateEvents(
+            this.value.getFullYear(),
+            this.value.getMonth(),
+            i,
+            this.calendar,
+          ),
+        );
       }
       Promise.all(promises).then((data) => {
         this.monthEvents = data.flat();
+        this.loading = false;
       });
     },
     updateValue(value) {
