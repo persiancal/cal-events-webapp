@@ -16,7 +16,7 @@ class DateEvents {
 
   constructor() {
     const getAndSave = (calendar) => {
-      const url = `https://raw.githubusercontent.com/persiancal/cal-events/gh-pages/${calendar}.json`;
+      const url = `https://persiancal.github.io/cal-events/${calendar}.json`;
       HttpClient('GET', url).then((resp) => {
         if (resp.ok) {
           this.savedData[calendar] = resp.data;
