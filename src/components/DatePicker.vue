@@ -104,7 +104,6 @@ export default {
   },
   created() {
     this.currentValue = new DateLib[this.calendar](this.value.toISOString());
-    console.log(this.highlightDays);
   },
   computed: {
     daysMatrix() {
