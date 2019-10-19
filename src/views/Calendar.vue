@@ -10,6 +10,7 @@
       <div class="fv-padding-sm" />
       <DatePicker
         :calendar="calendar"
+        :highlightDays="highlightDays"
         :value="value"
         @input="updateValue($event)" />
       <hr class="fv-hr fv-shadow" />
@@ -49,6 +50,7 @@ export default {
       value: undefined,
       dateEvents: [],
       monthEvents: [],
+      highlightDays: new Set(),
       loading: true,
     };
   },
@@ -90,6 +92,11 @@ export default {
       }
       Promise.all(promises).then((data) => {
         this.monthEvents = data.flat();
+        const highlightDays = new Set();
+        this.monthEvents.forEach((event) => {
+          highlightDays.add(event.eventDate);
+        });
+        this.highlightDays = highlightDays;
         this.loading = false;
       });
     },
