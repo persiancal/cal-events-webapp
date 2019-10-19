@@ -32,7 +32,8 @@
                 v-if="!!col"
                 class="item clickable"
                 v-text="col"
-                :selected="!!col && isSelected(undefined, undefined, col)"
+                :data-selected="!!col && isSelected(undefined, undefined, col)"
+                :data-highlighted="highlightDays.has(col)"
                 @click="setValue(undefined, undefined, col)"/>
             </td>
           </tr>
@@ -49,7 +50,7 @@
               <div
                 class="item clickable"
                 v-text="monthNames[col]"
-                :selected="isSelected(undefined, col, undefined)"
+                :date-selected="isSelected(undefined, col, undefined)"
                 @click="setValue(undefined, col, undefined) && setView('days')"/>
             </td>
           </tr>
@@ -66,7 +67,7 @@
               <div
                 class="item clickable"
                 v-text="col"
-                :selected="isSelected(col, undefined, undefined)"
+                :date-selected="isSelected(col, undefined, undefined)"
                 @click="setValue(col, undefined, undefined) && setView('months')" />
             </td>
           </tr>
@@ -87,6 +88,10 @@ export default {
     },
     calendar: {
       default: 'gregorian',
+    },
+    highlightDays: {
+      type: Set,
+      default: () => new Set(),
     },
   },
   data() {
@@ -218,10 +223,15 @@ export default {
     text-align: center;
     padding: 0.7em 0.1em;
     margin: auto;
+    position: relative;
 
-    &[selected] {
+    &[data-selected] {
       color: #bf2b2b;
       font-weight: bold;
+    }
+
+    &[data-highlighted] {
+      text-decoration : underline;
     }
 
     &.clickable{
