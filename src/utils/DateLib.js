@@ -1,9 +1,13 @@
 import IDate from 'idate';
+import HijriDate from './hijri';
 
 export default {
   gregorian: Date,
   jalali: IDate,
+  hijri: HijriDate,
 };
+
+global.hijri = HijriDate;
 
 export const monthNames = {
   gregorian: ['January', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
