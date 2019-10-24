@@ -34,6 +34,7 @@
                 v-text="col"
                 :data-selected="!!col && isSelected(undefined, undefined, col)"
                 :data-highlighted="highlightDays.has(col)"
+                :data-holiday="holiDays.has(col)"
                 @click="setValue(undefined, undefined, col)"/>
             </td>
           </tr>
@@ -90,6 +91,10 @@ export default {
       default: 'gregorian',
     },
     highlightDays: {
+      type: Set,
+      default: () => new Set(),
+    },
+    holiDays: {
       type: Set,
       default: () => new Set(),
     },
@@ -232,6 +237,9 @@ export default {
 
     &[data-highlighted] {
       text-decoration : underline;
+    }
+    &[data-holiday] {
+      border: solid 2px red;
     }
 
     &.clickable{

@@ -11,6 +11,7 @@
       <DatePicker
         :calendar="calendar"
         :highlightDays="highlightDays"
+        :holiDays="holiDays"
         :value="value"
         @input="updateValue($event)" />
       <hr class="fv-hr fv-shadow" />
@@ -51,6 +52,7 @@ export default {
       dateEvents: [],
       monthEvents: [],
       highlightDays: new Set(),
+      holiDays: new Set(),
       loading: true,
     };
   },
@@ -97,6 +99,13 @@ export default {
           highlightDays.add(event.eventDate);
         });
         this.highlightDays = highlightDays;
+        const holiDays = new Set();
+        this.monthEvents.forEach((event) => {
+          if (event.isHoliday) {
+            holiDays.add(event.eventDate);
+          }
+        });
+        this.holiDays = holiDays;
         this.loading = false;
       });
     },
