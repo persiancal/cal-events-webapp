@@ -12,7 +12,7 @@ class DateEvents {
 
   isReady = false;
 
-  calendarsKey = ['jalali', 'gregorian'];
+  calendarsKey = ['jalali', 'gregorian', 'hijri'];
 
   constructor() {
     const getAndSave = (calendar) => {
@@ -76,36 +76,138 @@ class DateEvents {
       }
       return false;
     };
+
+    // creating inputDate...
+    const inputDateArrs = {};
+    const inputDateInGregorian = new DateLib[calendar](year, month, date).gdate;
+    this.calendarsKey.forEach((cCalendar) => {
+      if (cCalendar === calendar) {
+        inputDateArrs[cCalendar] = [
+          year,
+          month,
+          date,
+        ];
+      } else if (cCalendar === 'hijri') {
+        const inputDateInHijriArr = DateLib.hijri.gregorianToHijri(
+          inputDateInGregorian.getFullYear(),
+          inputDateInGregorian.getMonth(),
+          inputDateInGregorian.getDate(),
+        );
+        inputDateArrs[cCalendar] = inputDateInHijriArr;
+      } else {
+        const inputDateInCCalendar = new DateLib[cCalendar](inputDateInGregorian.getTime());
+        inputDateArrs[cCalendar] = [
+          inputDateInCCalendar.getFullYear(),
+          inputDateInCCalendar.getMonth(),
+          inputDateInCCalendar.getDate(),
+        ];
+      }
+    });
+    console.log(inputDateArrs);
+
+    // checking events
     this.calendarsKey.forEach((cCalendar) => {
       this.savedData[cCalendar].events.forEach((event) => {
-        const eventDateObj = new DateLib[cCalendar](
-          oneOf(event.year),
+        const eventDateArr = [
+          oneOf(event.year), // not important for us
           oneOf(event.month, 1) - 1,
           oneOf(event.day, 1),
-        );
-        const eventDateObjInInputCalendar = new DateLib[calendar](eventDateObj.toISOString());
-        const eventYear = eventDateObjInInputCalendar.getFullYear();
-        const eventMonth = eventDateObjInInputCalendar.getMonth();
-        const eventDate = eventDateObjInInputCalendar.getDate();
+        ];
         const checks = [];
-        if (event.year && event.discuntinued) {
-          checks.push(eventYear <= year);
-        }
         if (event.month) {
-          checks.push(eventMonth === month);
+          checks.push(eventDateArr[1] === inputDateArrs[cCalendar][1]);
         }
         if (event.day) {
-          checks.push(eventDate === date);
+          checks.push(eventDateArr[2] === inputDateArrs[cCalendar][2]);
         }
         if (checks.filter(c => c === false).length === 0) {
           ret.push(Object.assign(event, {
-            eventYear,
-            eventMonth,
-            eventDate,
+            eventMonth: month,
+            eventDate: date,
+            isHoliday: !!(event.holiday || {}).Iran,
           }));
         }
       });
     });
+
+    // all except hijri
+    // this.calendarsKey.forEach((cCalendar) => {
+    //   this.savedData[cCalendar].events.forEach((event) => {
+    //     const eventDateArr = [
+    //       oneOf(event.year, 1441),
+    //       oneOf(event.month, 1) - 1,
+    //       oneOf(event.day, 1),
+    //     ];
+    //     let eventInInputCalendar;
+    //     if (cCalendar === 'hijri') {
+    //       // in input calendar
+    //       const eventGregorianArr = DateLib['hijri'].hijriToGregorian(...eventDateArr);
+    //       const eventInGregorian = new Date(...eventGregorianArr);
+    //       eventInInputCalendar = new DateLib[calendar](eventInGregorian.getTime());
+    //     } else {
+    //       eventInInputCalendar = new DateLib[calendar](eventDateObj.toISOString());
+    //     }
+    //     const eventDateObj = new DateLib[cCalendar](
+    //       oneOf(event.year),
+    //       oneOf(event.month, 1) - 1,
+    //       oneOf(event.day, 1),
+    //     );
+    //     const eventDateObjInInputCalendar = new DateLib[calendar](eventDateObj.toISOString());
+    //     const eventMonth = eventDateObjInInputCalendar.getMonth();
+    //     const eventDate = eventDateObjInInputCalendar.getDate();
+    //     const checks = [];
+    //     if (event.month) {
+    //       checks.push(eventMonth === month);
+    //     }
+    //     if (event.day) {
+    //       checks.push(eventDate === date);
+    //     }
+    //     if (checks.filter(c => c === false).length === 0) {
+    //       ret.push(Object.assign(event, {
+    //         eventMonth: month,
+    //         eventDate: date,
+    //       }));
+    //     }
+    //   });
+    // });
+
+    // the one for Hijri
+    // const inputDate = new DateLib[calendar](year, month, date).gdate;
+    // const inputDateInHijriArr = DateLib.hijri.gregorianToHijri(
+    //   inputDate.getFullYear(),
+    //   inputDate.getMonth(),
+    //   inputDate.getDate(),
+    // );
+
+    // this.savedData.hijri.events.forEach((event) => {
+    //   const eventDateArr = [
+    //     oneOf(event.month, 1) - 1,
+    //     oneOf(event.day, 1),
+    //   ];
+
+    //   // const eventDateObjInInputCalendar = new DateLib[calendar](eventDateObj.toISOString());
+    //   // const eventYear = eventDateObjInInputCalendar.getFullYear();
+    //   // const eventMonth = eventDateObjInInputCalendar.getMonth();
+    //   // const eventDate = eventDateObjInInputCalendar.getDate();
+    //   const checks = [];
+    //   // if (event.year && event.discuntinued) {
+    //   //   checks.push(eventYear <= year);
+    //   // }
+    //   if (event.month) {
+    //     checks.push(eventMonth === month);
+    //   }
+    //   if (event.day) {
+    //     checks.push(eventDate === date);
+    //   }
+    //   if (checks.filter(c => c === false).length === 0) {
+    //     ret.push(Object.assign(event, {
+    //       eventYear,
+    //       eventMonth,
+    //       eventDate,
+    //     }));
+    //   }
+    // });
+
     ret.sort((a, b) => {
       if (a.eventDate > b.eventDate) {
         return -1;
